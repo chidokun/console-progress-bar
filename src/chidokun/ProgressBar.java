@@ -1,12 +1,8 @@
 package chidokun;
 
-import java.io.Console;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * @author tuannlh
- */
 public class ProgressBar {
 
     private String animation = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
@@ -16,8 +12,7 @@ public class ProgressBar {
 
     private int animationIndex = 0;
     private final Timer timer;
-    private boolean isSuccess = false;
-    private boolean isFailed = false;
+    private int flag = 0;
 
     public ProgressBar() {
         timer = new Timer();
@@ -40,33 +35,32 @@ public class ProgressBar {
     }
 
     public void reportSuccess() {
-        this.isSuccess = true;
-        this.isFailed = false;
+        this.flag = 1;
         this.render();
         this.stop();
     }
 
     public void reportError() {
-        this.isSuccess = false;
-        this.isFailed = true;
+        this.flag = -1;
         this.render();
         this.stop();
     }
 
     public void render() {
         int currentBlock = (int) (value / maxRange * width);
-        char symbol = isSuccess
-                ? '\u2714'
-                : isFailed
-                ? '\u2718'
-                : animation.charAt(animationIndex % animation.length());
-        String text = String.format("%s Processing: [%s%s] %.0f/%.0f\r",
-                symbol,
-                Strings.repeat('█', currentBlock),
-                Strings.repeat('░', width - currentBlock),
-                value,
-                maxRange);
+        char symbol = getSymbol();
+        String filledBlock = Strings.repeat('#', currentBlock);
+        String remainBlock = Strings.repeat('-', width - currentBlock);
+        String text = String.format("%s [%s%s] %.0f/%.0f\r", symbol, filledBlock, remainBlock, value, maxRange);
         System.out.print(text);
+    }
+
+    private char getSymbol() {
+        switch (flag) {
+            case 1: return '\u2714';
+            case -1: return '\u2718';
+            default: return animation.charAt(animationIndex % animation.length());
+        }
     }
 
     public void stop() {

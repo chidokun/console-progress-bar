@@ -11,8 +11,22 @@ public class Main {
         p.setMaxRange(MAX);
         for (int i = 1; i <= MAX; i++) {
             p.setValue(i);
-            Thread.sleep(50 + rand.nextInt(300));
+            Thread.sleep(rand.nextInt(50));
         }
         p.reportSuccess();
+        p = new ProgressBar();
+        p.setMaxRange(MAX);
+        try {
+            for (int i = 1; i <= MAX; i++) {
+                p.setValue(i);
+                Thread.sleep(50 + rand.nextInt(50));
+                if (i >= 45) {
+                    throw new RuntimeException("Error while process");
+                }
+            }
+            p.reportSuccess();
+        } catch (Exception ex) {
+            p.reportError();
+        }
     }
 }
